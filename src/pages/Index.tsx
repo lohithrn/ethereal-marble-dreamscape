@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
@@ -117,8 +118,7 @@ const Scene = () => {
         minDistance={2} 
         maxDistance={5}
         enablePan={false}
-        autoRotate={true}
-        autoRotateSpeed={0.5}
+        autoRotate={false}
       />
     </>
   );
