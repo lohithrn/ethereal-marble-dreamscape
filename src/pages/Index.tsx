@@ -95,7 +95,7 @@ const FluidSphere = () => {
 
   return (
     <mesh ref={meshRef}>
-      <sphereGeometry args={[1, 128, 128]} />
+      <sphereGeometry args={[0.5, 128, 128]} />
       <primitive object={shaderMaterial} ref={materialRef} attach="material" />
     </mesh>
   );
