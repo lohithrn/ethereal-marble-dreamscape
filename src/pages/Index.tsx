@@ -29,13 +29,6 @@ const FluidSphere = () => {
         vUv = uv;
         vNormal = normal;
         
-        // Create grid pattern displacement
-        float gridSize = 20.0;
-        vec3 pos = position;
-        float xGrid = sin(pos.x * gridSize);
-        float yGrid = sin(pos.y * gridSize);
-        float zGrid = sin(pos.z * gridSize);
-        
         // Create dynamic displacement based on audio
         float audioDisplacement = 0.0;
         for(int i = 0; i < 32; i++) {
@@ -43,9 +36,7 @@ const FluidSphere = () => {
           audioDisplacement += sin(position.y * 5.0 + uTime + float(i)) * freq * 0.2;
         }
         
-        // Combine grid and audio displacement
-        vec3 gridDisplacement = normal * (xGrid * yGrid * zGrid * 0.02);
-        vec3 newPosition = position + gridDisplacement + normal * audioDisplacement;
+        vec3 newPosition = position + normal * audioDisplacement;
         vPosition = newPosition;
         
         gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
@@ -70,26 +61,23 @@ const FluidSphere = () => {
         }
         audioIntensity = audioIntensity / 32.0;
         
-        // Enhanced grid pattern
-        float gridPattern = abs(sin(vPosition.x * 20.0) * sin(vPosition.y * 20.0) * sin(vPosition.z * 20.0));
-        
         float wave = sin(vPosition.y * 5.0 + uTime) * 0.5 + 0.5;
-        wave = wave + audioIntensity + gridPattern * 0.3;
+        wave = wave + audioIntensity;
         
-        // Enhanced gradient from bottom to top with grid influence
-        float gradient = smoothstep(-1.0, 1.0, vPosition.y + gridPattern * 0.2);
+        // Enhanced gradient from bottom to top
+        float gradient = smoothstep(-1.0, 1.0, vPosition.y);
         
-        // More dramatic color mixing based on audio and grid
-        vec3 color1 = mix(uColor1, uColor3, wave * audioIntensity * 2.0 + gridPattern * 0.5);
+        // More dramatic color mixing based on audio
+        vec3 color1 = mix(uColor1, uColor3, wave * audioIntensity * 2.0);
         vec3 color = mix(color1, uColor2, gradient);
         
-        // Enhanced rim lighting with grid influence
+        // Enhanced rim lighting
         float rimLight = 1.0 - max(0.0, dot(vNormal, vec3(0.0, 0.0, 1.0)));
-        rimLight = pow(rimLight, 2.0) * (0.5 + audioIntensity + gridPattern * 0.3);
+        rimLight = pow(rimLight, 2.0) * (0.5 + audioIntensity);
         color = mix(color, uColor2, rimLight);
         
-        // Dynamic opacity based on audio and grid
-        float opacity = 0.9 - (wave * 0.2) * (1.0 - gradient) + audioIntensity * 0.2 + gridPattern * 0.1;
+        // Dynamic opacity based on audio
+        float opacity = 0.9 - (wave * 0.2) * (1.0 - gradient) + audioIntensity * 0.2;
         
         gl_FragColor = vec4(color, opacity);
       }
