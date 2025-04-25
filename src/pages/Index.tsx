@@ -14,9 +14,9 @@ const FluidSphere = () => {
     uniforms: {
       uTime: { value: 0 },
       uAudioData: { value: new Float32Array(32) },
-      uColor1: { value: new THREE.Color("#D3E4FD") },
-      uColor2: { value: new THREE.Color("#ffffff") },
-      uColor3: { value: new THREE.Color("#33C3F0") }
+      uColor1: { value: new THREE.Color("#33C3F0") },
+      uColor2: { value: new THREE.Color("#FEF7CD") },
+      uColor3: { value: new THREE.Color("#1EAEDB") }
     },
     vertexShader: `
       varying vec2 vUv;
@@ -29,7 +29,6 @@ const FluidSphere = () => {
         vUv = uv;
         vNormal = normal;
         
-        // Create dynamic displacement based on audio
         float audioDisplacement = 0.0;
         for(int i = 0; i < 32; i++) {
           float freq = uAudioData[i];
@@ -54,7 +53,6 @@ const FluidSphere = () => {
       varying vec3 vPosition;
       
       void main() {
-        // Create dynamic wave pattern based on audio
         float audioIntensity = 0.0;
         for(int i = 0; i < 32; i++) {
           audioIntensity += uAudioData[i];
@@ -64,22 +62,18 @@ const FluidSphere = () => {
         float wave = sin(vPosition.y * 5.0 + uTime) * 0.5 + 0.5;
         wave = wave + audioIntensity;
         
-        // Enhanced gradient from bottom to top
         float gradient = smoothstep(-1.0, 1.0, vPosition.y);
         
-        // More dramatic color mixing based on audio
         vec3 color1 = mix(uColor1, uColor3, wave * audioIntensity * 2.0);
-        vec3 color = mix(color1, uColor2, gradient);
+        vec3 color2 = mix(color1, uColor2, gradient);
         
-        // Enhanced rim lighting
         float rimLight = 1.0 - max(0.0, dot(vNormal, vec3(0.0, 0.0, 1.0)));
         rimLight = pow(rimLight, 2.0) * (0.5 + audioIntensity);
-        color = mix(color, uColor2, rimLight);
+        color2 = mix(color2, uColor2, rimLight);
         
-        // Dynamic opacity based on audio
         float opacity = 0.9 - (wave * 0.2) * (1.0 - gradient) + audioIntensity * 0.2;
         
-        gl_FragColor = vec4(color, opacity);
+        gl_FragColor = vec4(color2, opacity);
       }
     `,
     transparent: true,
@@ -92,7 +86,6 @@ const FluidSphere = () => {
       materialRef.current.uniforms.uTime.value = time.current;
       materialRef.current.uniforms.uAudioData.value = audioData;
       
-      // More dramatic rotation based on audio intensity
       const avgAudio = audioData.reduce((a, b) => a + b, 0) / audioData.length;
       meshRef.current.rotation.y += 0.001 + avgAudio * 0.01;
       meshRef.current.rotation.x += 0.0005 + avgAudio * 0.005;
