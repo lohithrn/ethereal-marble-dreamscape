@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
@@ -10,6 +9,8 @@ const FluidSphere = () => {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const time = useRef(0);
   const { audioData, isCapturing } = useAudioAnalyzer();
+  const rotationDirection = useRef({ x: 1, y: 1 });
+  const lastDirectionChange = useRef(0);
   
   const shaderMaterial = new THREE.ShaderMaterial({
     uniforms: {
@@ -99,9 +100,24 @@ const FluidSphere = () => {
       
       const avgAudio = audioData.reduce((a, b) => a + b, 0) / audioData.length;
       
-      // Reduced rotation speed by ~50%
-      meshRef.current.rotation.y += 0.001 + avgAudio * 0.0125; // Reduced from 0.025
-      meshRef.current.rotation.x += 0.0005 + avgAudio * 0.0075; // Reduced from 0.015
+      // Check if audio crosses a threshold to trigger direction change
+      // Don't change direction too frequently (wait at least 1 second)
+      if (avgAudio > 0.4 && time.current - lastDirectionChange.current > 1) {
+        // Randomly change rotation directions
+        rotationDirection.current.x = Math.random() > 0.5 ? 1 : -1;
+        rotationDirection.current.y = Math.random() > 0.5 ? 1 : -1;
+        
+        // Add some random angles occasionally
+        if (Math.random() > 0.7) {
+          meshRef.current.rotation.z += (Math.random() - 0.5) * Math.PI / 4;
+        }
+        
+        lastDirectionChange.current = time.current;
+      }
+      
+      // Apply rotation with current direction
+      meshRef.current.rotation.y += (0.001 + avgAudio * 0.0125) * rotationDirection.current.y;
+      meshRef.current.rotation.x += (0.0005 + avgAudio * 0.0075) * rotationDirection.current.x;
       
       // Reduced pulsing effect by ~50%
       const scale = 1.0 + avgAudio * 0.075; // Reduced from 0.15
