@@ -33,9 +33,9 @@ const FluidSphere = () => {
         float audioDisplacement = 0.0;
         for(int i = 0; i < 32; i++) {
           float freq = uAudioData[i];
-          // Amplify the audio displacement with higher multiplier and more complex wave patterns
-          audioDisplacement += sin(position.y * 10.0 + uTime * 1.5 + float(i) * 0.3) * freq * 0.4;
-          audioDisplacement += cos(position.x * 8.0 + uTime + float(i) * 0.2) * freq * 0.3;
+          // Reduced multipliers by ~50%
+          audioDisplacement += sin(position.y * 10.0 + uTime * 1.5 + float(i) * 0.3) * freq * 0.2;
+          audioDisplacement += cos(position.x * 8.0 + uTime + float(i) * 0.2) * freq * 0.15;
         }
         
         vec3 newPosition = position + normal * audioDisplacement;
@@ -58,31 +58,31 @@ const FluidSphere = () => {
       void main() {
         float audioIntensity = 0.0;
         for(int i = 0; i < 32; i++) {
-          // Add more weight to certain frequency ranges for more dramatic effect
+          // Reduced weights by ~50%
           float weight = 1.0;
-          if (i > 5 && i < 15) weight = 1.5; // Mid frequencies
-          if (i > 20) weight = 1.8; // High frequencies
+          if (i > 5 && i < 15) weight = 1.25; // Mid frequencies (was 1.5)
+          if (i > 20) weight = 1.4; // High frequencies (was 1.8)
           audioIntensity += uAudioData[i] * weight;
         }
         audioIntensity = audioIntensity / 40.0;
         
-        // Create more complex wave patterns
+        // Create more complex wave patterns but with reduced impact
         float wave = sin(vPosition.y * 5.0 + uTime) * 0.5 + 0.5;
         float wave2 = cos(vPosition.x * 8.0 + uTime * 1.2) * 0.5 + 0.5;
-        wave = wave * wave2 + audioIntensity * 1.5;
+        wave = wave * wave2 + audioIntensity * 0.75; // Reduced from 1.5
         
         float gradient = smoothstep(-1.0, 1.0, vPosition.y);
         
-        vec3 color1 = mix(uColor1, uColor3, wave * audioIntensity * 3.0);
+        vec3 color1 = mix(uColor1, uColor3, wave * audioIntensity * 1.5); // Reduced from 3.0
         vec3 color2 = mix(color1, uColor2, gradient);
         
-        // Enhanced rim lighting effect
+        // Reduced rim lighting effect
         float rimLight = 1.0 - max(0.0, dot(vNormal, vec3(0.0, 0.0, 1.0)));
-        rimLight = pow(rimLight, 1.5) * (0.7 + audioIntensity * 2.0);
+        rimLight = pow(rimLight, 1.5) * (0.7 + audioIntensity * 1.0); // Reduced from 2.0
         color2 = mix(color2, uColor2, rimLight);
         
-        // More dramatic opacity changes based on audio
-        float opacity = 0.9 - (wave * 0.3) * (1.0 - gradient) + audioIntensity * 0.4;
+        // Less dramatic opacity changes
+        float opacity = 0.9 - (wave * 0.15) * (1.0 - gradient) + audioIntensity * 0.2; // Reduced from 0.3 and 0.4
         
         gl_FragColor = vec4(color2, opacity);
       }
@@ -99,12 +99,12 @@ const FluidSphere = () => {
       
       const avgAudio = audioData.reduce((a, b) => a + b, 0) / audioData.length;
       
-      // More dramatic rotation based on audio
-      meshRef.current.rotation.y += 0.002 + avgAudio * 0.025;
-      meshRef.current.rotation.x += 0.001 + avgAudio * 0.015;
+      // Reduced rotation speed by ~50%
+      meshRef.current.rotation.y += 0.001 + avgAudio * 0.0125; // Reduced from 0.025
+      meshRef.current.rotation.x += 0.0005 + avgAudio * 0.0075; // Reduced from 0.015
       
-      // Add some subtle pulsing based on audio
-      const scale = 1.0 + avgAudio * 0.15;
+      // Reduced pulsing effect by ~50%
+      const scale = 1.0 + avgAudio * 0.075; // Reduced from 0.15
       meshRef.current.scale.set(scale, scale, scale);
     }
   });
