@@ -167,7 +167,7 @@ const FluidSphere = () => {
 
   return (
     <mesh ref={meshRef}>
-      <sphereGeometry args={[0.4, 192, 192]} /> {/* Reduced from 0.5 to 0.4 */}
+      <sphereGeometry args={[0.35, 192, 192]} /> {/* Reduced from 0.4 to 0.35 */}
       <primitive object={shaderMaterial} ref={materialRef} attach="material" />
     </mesh>
   );
@@ -177,19 +177,19 @@ const Scene = () => {
   const { camera } = useThree();
   
   useEffect(() => {
-    camera.position.z = 3.5; // Increased from 3 to 3.5 to make sphere appear smaller
+    camera.position.z = 4.5; // Increased from 3.5 to 4.5 to make sphere appear smaller
   }, [camera]);
 
   return (
     <>
       <ambientLight intensity={0.2} />
       <directionalLight position={[10, 10, 10]} intensity={1.2} color="#ffffff" />
-      <directionalLight position={[-5, -5, 5]} intensity={0.5} color="#D4AF37" /> {/* Changed color to golden */}
+      <directionalLight position={[-5, -5, 5]} intensity={0.5} color="#D4AF37" />
       <FluidSphere />
       <OrbitControls 
         enableZoom={true} 
-        minDistance={2} // Increased minimum distance from 1.5 to 2
-        maxDistance={6}
+        minDistance={3} // Increased minimum distance from 2 to 3
+        maxDistance={8} // Increased maximum distance from 6 to 8
         enablePan={false}
         autoRotate={true}
         autoRotateSpeed={0.5}
@@ -245,7 +245,7 @@ const Index = () => {
           <div className="w-full h-full">
             <Canvas dpr={[1, 2]} gl={{ alpha: true, antialias: true }}>
               <Scene />
-              <PerspectiveCamera makeDefault fov={45} position={[0, 0, 3.5]} /> {/* Reduced FOV from 50 to 45 and increased Z position */}
+              <PerspectiveCamera makeDefault fov={40} position={[0, 0, 4.5]} /> {/* Reduced FOV further and increased Z position */}
             </Canvas>
           </div>
           <div className="absolute bottom-6 left-0 w-full text-center text-gray-600 text-sm bg-gradient-to-t from-white/80 to-transparent py-6">
