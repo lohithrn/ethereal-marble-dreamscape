@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
@@ -16,10 +17,10 @@ const FluidSphere = () => {
     uniforms: {
       uTime: { value: 0 },
       uAudioData: { value: new Float32Array(32) },
-      uColor1: { value: new THREE.Color("#8B5CF6") },  // Vivid Purple
-      uColor2: { value: new THREE.Color("#D946EF") },  // Magenta Pink
-      uColor3: { value: new THREE.Color("#F97316") },  // Bright Orange
-      uColor4: { value: new THREE.Color("#0EA5E9") },  // Ocean Blue
+      uColor1: { value: new THREE.Color("#F9E79F") },  // Light Yellow
+      uColor2: { value: new THREE.Color("#8E9196") },  // Medium Grey
+      uColor3: { value: new THREE.Color("#D4AF37") },  // Golden
+      uColor4: { value: new THREE.Color("#FEF9E7") },  // Pale Yellow
     },
     vertexShader: `
       varying vec2 vUv;
@@ -217,7 +218,7 @@ const Index = () => {
           <div className="absolute top-0 left-0 w-full p-6 z-10 bg-gradient-to-b from-white/80 to-transparent">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
+                <h1 className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-amber-600">
                   Audio Reactive Sphere
                 </h1>
                 <p className="text-sm md:text-md text-gray-600 mt-1">
@@ -233,7 +234,7 @@ const Index = () => {
                   <Link to="/particleShapeChanger">Particle Shape</Link>
                 </Button>
                 <Button 
-                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-500 text-white rounded-md hover:from-purple-700 hover:to-blue-600 transition-all shadow-lg hover:shadow-purple-500/20"
+                  className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 text-white rounded-md hover:from-yellow-600 hover:to-amber-700 transition-all shadow-lg hover:shadow-amber-500/20"
                   asChild
                 >
                   <Link to="/droplet">Try Droplet</Link>
