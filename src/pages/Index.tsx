@@ -9,8 +9,6 @@ const FluidSphere = () => {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const time = useRef(0);
   const { audioData, isCapturing } = useAudioAnalyzer();
-  const rotationDirection = useRef({ x: 1, y: 1 });
-  const lastDirectionChange = useRef(0);
   
   const shaderMaterial = new THREE.ShaderMaterial({
     uniforms: {
@@ -34,9 +32,7 @@ const FluidSphere = () => {
         float audioDisplacement = 0.0;
         for(int i = 0; i < 32; i++) {
           float freq = uAudioData[i];
-          // Reduced multipliers by ~50%
-          audioDisplacement += sin(position.y * 10.0 + uTime * 1.5 + float(i) * 0.3) * freq * 0.2;
-          audioDisplacement += cos(position.x * 8.0 + uTime + float(i) * 0.2) * freq * 0.15;
+          audioDisplacement += sin(position.y * 5.0 + uTime + float(i)) * freq * 0.2;
         }
         
         vec3 newPosition = position + normal * audioDisplacement;
@@ -59,31 +55,23 @@ const FluidSphere = () => {
       void main() {
         float audioIntensity = 0.0;
         for(int i = 0; i < 32; i++) {
-          // Reduced weights by ~50%
-          float weight = 1.0;
-          if (i > 5 && i < 15) weight = 1.25; // Mid frequencies (was 1.5)
-          if (i > 20) weight = 1.4; // High frequencies (was 1.8)
-          audioIntensity += uAudioData[i] * weight;
+          audioIntensity += uAudioData[i];
         }
-        audioIntensity = audioIntensity / 40.0;
+        audioIntensity = audioIntensity / 32.0;
         
-        // Create more complex wave patterns but with reduced impact
         float wave = sin(vPosition.y * 5.0 + uTime) * 0.5 + 0.5;
-        float wave2 = cos(vPosition.x * 8.0 + uTime * 1.2) * 0.5 + 0.5;
-        wave = wave * wave2 + audioIntensity * 0.75; // Reduced from 1.5
+        wave = wave + audioIntensity;
         
         float gradient = smoothstep(-1.0, 1.0, vPosition.y);
         
-        vec3 color1 = mix(uColor1, uColor3, wave * audioIntensity * 1.5); // Reduced from 3.0
+        vec3 color1 = mix(uColor1, uColor3, wave * audioIntensity * 2.0);
         vec3 color2 = mix(color1, uColor2, gradient);
         
-        // Reduced rim lighting effect
         float rimLight = 1.0 - max(0.0, dot(vNormal, vec3(0.0, 0.0, 1.0)));
-        rimLight = pow(rimLight, 1.5) * (0.7 + audioIntensity * 1.0); // Reduced from 2.0
+        rimLight = pow(rimLight, 2.0) * (0.5 + audioIntensity);
         color2 = mix(color2, uColor2, rimLight);
         
-        // Less dramatic opacity changes
-        float opacity = 0.9 - (wave * 0.15) * (1.0 - gradient) + audioIntensity * 0.2; // Reduced from 0.3 and 0.4
+        float opacity = 0.9 - (wave * 0.2) * (1.0 - gradient) + audioIntensity * 0.2;
         
         gl_FragColor = vec4(color2, opacity);
       }
@@ -99,29 +87,8 @@ const FluidSphere = () => {
       materialRef.current.uniforms.uAudioData.value = audioData;
       
       const avgAudio = audioData.reduce((a, b) => a + b, 0) / audioData.length;
-      
-      // Check if audio crosses a threshold to trigger direction change
-      // Don't change direction too frequently (wait at least 1 second)
-      if (avgAudio > 0.4 && time.current - lastDirectionChange.current > 1) {
-        // Randomly change rotation directions
-        rotationDirection.current.x = Math.random() > 0.5 ? 1 : -1;
-        rotationDirection.current.y = Math.random() > 0.5 ? 1 : -1;
-        
-        // Add some random angles occasionally
-        if (Math.random() > 0.7) {
-          meshRef.current.rotation.z += (Math.random() - 0.5) * Math.PI / 4;
-        }
-        
-        lastDirectionChange.current = time.current;
-      }
-      
-      // Apply rotation with current direction
-      meshRef.current.rotation.y += (0.001 + avgAudio * 0.0125) * rotationDirection.current.y;
-      meshRef.current.rotation.x += (0.0005 + avgAudio * 0.0075) * rotationDirection.current.x;
-      
-      // Reduced pulsing effect by ~50%
-      const scale = 1.0 + avgAudio * 0.075; // Reduced from 0.15
-      meshRef.current.scale.set(scale, scale, scale);
+      meshRef.current.rotation.y += 0.001 + avgAudio * 0.01;
+      meshRef.current.rotation.x += 0.0005 + avgAudio * 0.005;
     }
   });
 
