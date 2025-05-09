@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
@@ -32,7 +33,9 @@ const FluidSphere = () => {
         float audioDisplacement = 0.0;
         for(int i = 0; i < 32; i++) {
           float freq = uAudioData[i];
-          audioDisplacement += sin(position.y * 5.0 + uTime + float(i)) * freq * 0.2;
+          // Amplify the audio displacement with higher multiplier and more complex wave patterns
+          audioDisplacement += sin(position.y * 10.0 + uTime * 1.5 + float(i) * 0.3) * freq * 0.4;
+          audioDisplacement += cos(position.x * 8.0 + uTime + float(i) * 0.2) * freq * 0.3;
         }
         
         vec3 newPosition = position + normal * audioDisplacement;
@@ -55,23 +58,31 @@ const FluidSphere = () => {
       void main() {
         float audioIntensity = 0.0;
         for(int i = 0; i < 32; i++) {
-          audioIntensity += uAudioData[i];
+          // Add more weight to certain frequency ranges for more dramatic effect
+          float weight = 1.0;
+          if (i > 5 && i < 15) weight = 1.5; // Mid frequencies
+          if (i > 20) weight = 1.8; // High frequencies
+          audioIntensity += uAudioData[i] * weight;
         }
-        audioIntensity = audioIntensity / 32.0;
+        audioIntensity = audioIntensity / 40.0;
         
+        // Create more complex wave patterns
         float wave = sin(vPosition.y * 5.0 + uTime) * 0.5 + 0.5;
-        wave = wave + audioIntensity;
+        float wave2 = cos(vPosition.x * 8.0 + uTime * 1.2) * 0.5 + 0.5;
+        wave = wave * wave2 + audioIntensity * 1.5;
         
         float gradient = smoothstep(-1.0, 1.0, vPosition.y);
         
-        vec3 color1 = mix(uColor1, uColor3, wave * audioIntensity * 2.0);
+        vec3 color1 = mix(uColor1, uColor3, wave * audioIntensity * 3.0);
         vec3 color2 = mix(color1, uColor2, gradient);
         
+        // Enhanced rim lighting effect
         float rimLight = 1.0 - max(0.0, dot(vNormal, vec3(0.0, 0.0, 1.0)));
-        rimLight = pow(rimLight, 2.0) * (0.5 + audioIntensity);
+        rimLight = pow(rimLight, 1.5) * (0.7 + audioIntensity * 2.0);
         color2 = mix(color2, uColor2, rimLight);
         
-        float opacity = 0.9 - (wave * 0.2) * (1.0 - gradient) + audioIntensity * 0.2;
+        // More dramatic opacity changes based on audio
+        float opacity = 0.9 - (wave * 0.3) * (1.0 - gradient) + audioIntensity * 0.4;
         
         gl_FragColor = vec4(color2, opacity);
       }
@@ -87,8 +98,14 @@ const FluidSphere = () => {
       materialRef.current.uniforms.uAudioData.value = audioData;
       
       const avgAudio = audioData.reduce((a, b) => a + b, 0) / audioData.length;
-      meshRef.current.rotation.y += 0.001 + avgAudio * 0.01;
-      meshRef.current.rotation.x += 0.0005 + avgAudio * 0.005;
+      
+      // More dramatic rotation based on audio
+      meshRef.current.rotation.y += 0.002 + avgAudio * 0.025;
+      meshRef.current.rotation.x += 0.001 + avgAudio * 0.015;
+      
+      // Add some subtle pulsing based on audio
+      const scale = 1.0 + avgAudio * 0.15;
+      meshRef.current.scale.set(scale, scale, scale);
     }
   });
 
