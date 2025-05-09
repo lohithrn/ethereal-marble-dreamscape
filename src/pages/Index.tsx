@@ -17,10 +17,10 @@ const FluidSphere = () => {
     uniforms: {
       uTime: { value: 0 },
       uAudioData: { value: new Float32Array(32) },
-      uColor1: { value: new THREE.Color("#F9E79F") },  // Light Yellow
-      uColor2: { value: new THREE.Color("#8E9196") },  // Medium Grey
-      uColor3: { value: new THREE.Color("#D4AF37") },  // Golden
-      uColor4: { value: new THREE.Color("#FEF9E7") },  // Pale Yellow
+      uColor1: { value: new THREE.Color("#8E9196") },  // Medium Grey
+      uColor2: { value: new THREE.Color("#D4AF37") },  // Golden
+      uColor3: { value: new THREE.Color("#aaadb0") },  // Cool Grey
+      uColor4: { value: new THREE.Color("#D4AF37") },  // Golden
     },
     vertexShader: `
       varying vec2 vUv;
@@ -167,7 +167,7 @@ const FluidSphere = () => {
 
   return (
     <mesh ref={meshRef}>
-      <sphereGeometry args={[0.5, 192, 192]} />
+      <sphereGeometry args={[0.4, 192, 192]} /> {/* Reduced from 0.5 to 0.4 */}
       <primitive object={shaderMaterial} ref={materialRef} attach="material" />
     </mesh>
   );
@@ -177,18 +177,18 @@ const Scene = () => {
   const { camera } = useThree();
   
   useEffect(() => {
-    camera.position.z = 3;
+    camera.position.z = 3.5; // Increased from 3 to 3.5 to make sphere appear smaller
   }, [camera]);
 
   return (
     <>
       <ambientLight intensity={0.2} />
       <directionalLight position={[10, 10, 10]} intensity={1.2} color="#ffffff" />
-      <directionalLight position={[-5, -5, 5]} intensity={0.5} color="#8B5CF6" />
+      <directionalLight position={[-5, -5, 5]} intensity={0.5} color="#D4AF37" /> {/* Changed color to golden */}
       <FluidSphere />
       <OrbitControls 
         enableZoom={true} 
-        minDistance={1.5} 
+        minDistance={2} // Increased minimum distance from 1.5 to 2
         maxDistance={6}
         enablePan={false}
         autoRotate={true}
@@ -218,7 +218,7 @@ const Index = () => {
           <div className="absolute top-0 left-0 w-full p-6 z-10 bg-gradient-to-b from-white/80 to-transparent">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-amber-600">
+                <h1 className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-600 to-amber-600">
                   Audio Reactive Sphere
                 </h1>
                 <p className="text-sm md:text-md text-gray-600 mt-1">
@@ -234,7 +234,7 @@ const Index = () => {
                   <Link to="/particleShapeChanger">Particle Shape</Link>
                 </Button>
                 <Button 
-                  className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-amber-600 text-white rounded-md hover:from-yellow-600 hover:to-amber-700 transition-all shadow-lg hover:shadow-amber-500/20"
+                  className="px-4 py-2 bg-gradient-to-r from-gray-600 to-amber-600 text-white rounded-md hover:from-gray-700 hover:to-amber-700 transition-all shadow-lg hover:shadow-amber-500/20"
                   asChild
                 >
                   <Link to="/droplet">Try Droplet</Link>
@@ -245,7 +245,7 @@ const Index = () => {
           <div className="w-full h-full">
             <Canvas dpr={[1, 2]} gl={{ alpha: true, antialias: true }}>
               <Scene />
-              <PerspectiveCamera makeDefault fov={50} position={[0, 0, 3]} />
+              <PerspectiveCamera makeDefault fov={45} position={[0, 0, 3.5]} /> {/* Reduced FOV from 50 to 45 and increased Z position */}
             </Canvas>
           </div>
           <div className="absolute bottom-6 left-0 w-full text-center text-gray-600 text-sm bg-gradient-to-t from-white/80 to-transparent py-6">
