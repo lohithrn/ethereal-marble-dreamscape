@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
@@ -208,27 +207,27 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="w-full h-screen bg-black flex flex-col items-center justify-center overflow-hidden">
+    <div className="w-full h-screen bg-white flex flex-col items-center justify-center overflow-hidden">
       {!loaded ? (
         <div className="text-center">
           <p className="text-lg text-gray-400">Loading experience...</p>
         </div>
       ) : (
         <>
-          <div className="absolute top-0 left-0 w-full p-6 z-10 bg-gradient-to-b from-black/80 to-transparent">
+          <div className="absolute top-0 left-0 w-full p-6 z-10 bg-gradient-to-b from-white/80 to-transparent">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-3xl md:text-5xl font-bold text-white tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
+                <h1 className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
                   Audio Reactive Sphere
                 </h1>
-                <p className="text-sm md:text-md text-gray-300 mt-1">
+                <p className="text-sm md:text-md text-gray-600 mt-1">
                   An interactive sound visualization
                 </p>
               </div>
               <div className="flex gap-3">
                 <Button 
                   variant="outline" 
-                  className="bg-transparent border border-white/30 text-white hover:bg-white/10"
+                  className="bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-100"
                   asChild
                 >
                   <Link to="/particleShapeChanger">Particle Shape</Link>
@@ -248,7 +247,7 @@ const Index = () => {
               <PerspectiveCamera makeDefault fov={50} position={[0, 0, 3]} />
             </Canvas>
           </div>
-          <div className="absolute bottom-6 left-0 w-full text-center text-gray-300 text-sm bg-gradient-to-t from-black/80 to-transparent py-6">
+          <div className="absolute bottom-6 left-0 w-full text-center text-gray-600 text-sm bg-gradient-to-t from-white/80 to-transparent py-6">
             Click and drag to rotate | Scroll to zoom | Allow microphone access for audio reactivity
           </div>
         </>
@@ -258,4 +257,3 @@ const Index = () => {
 };
 
 export default Index;
-
